@@ -1,4 +1,4 @@
-const { default: axiosInstance } = require(".");
+import axiosInstance from ".";
 
 // add exam
 
@@ -99,4 +99,4 @@ export const deleteQuestionById = async (payload) => {
   } catch (error) {
     return error.response.data;
   }
-}
+};

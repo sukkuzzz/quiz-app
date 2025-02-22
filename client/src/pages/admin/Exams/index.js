@@ -1,5 +1,5 @@
 import { message, Table } from "antd";
-import React, { useEffect } from "react";
+import React, { useEffect, useCallback } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { deleteExamById, getAllExams } from "../../../apicalls/exams";
@@ -11,7 +11,7 @@ function Exams() {
   const [exams, setExams] = React.useState([]);
   const dispatch = useDispatch();
 
-  const getExamsData = async () => {
+  const getExamsData = useCallback(async () => {
     try {
       dispatch(ShowLoading());
       const response = await getAllExams();
@@ -25,7 +25,7 @@ function Exams() {
       dispatch(HideLoading());
       message.error(error.message);
     }
-  };
+  }, [dispatch]);
 
   const deleteExam = async (examId) => {
     try {
@@ -85,7 +85,7 @@ function Exams() {
   ];
   useEffect(() => {
     getExamsData();
-  }, []);
+  }, [getExamsData]);
   return (
     <div>
       <div className="flex justify-between mt-2 items-end">

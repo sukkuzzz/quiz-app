@@ -1,5 +1,5 @@
 import { message } from "antd";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import { getExamById } from "../../../apicalls/exams";
@@ -21,7 +21,7 @@ function WriteExam() {
   const [timeUp, setTimeUp] = useState(false);
   const [intervalId, setIntervalId] = useState(null);
   const { user } = useSelector((state) => state.users);
-  const getExamData = async () => {
+  const getExamData = useCallback(async () => {
     try {
       dispatch(ShowLoading());
       const response = await getExamById({
@@ -39,9 +39,9 @@ function WriteExam() {
       dispatch(HideLoading());
       message.error(error.message);
     }
-  };
+  }, [dispatch, params.id]);
 
-  const calculateResult = async () => {
+  const calculateResult = useCallback(async () => {
     try {
       let correctAnswers = [];
       let wrongAnswers = [];
@@ -81,7 +81,14 @@ function WriteExam() {
       dispatch(HideLoading());
       message.error(error.message);
     }
-  };
+  }, [
+    params.id,
+    questions,
+    selectedOptions,
+    examData.passingMarks,
+    user._id,
+    dispatch,
+  ]);
 
   const startTimer = () => {
     let totalSeconds = examData.duration;
@@ -101,13 +108,13 @@ function WriteExam() {
       clearInterval(intervalId);
       calculateResult();
     }
-  }, [timeUp]);
+  }, [timeUp, view, intervalId, calculateResult]);
 
   useEffect(() => {
     if (params.id) {
       getExamData();
     }
-  }, []);
+  }, [params.id, getExamData]);
   return (
     examData && (
       <div className="mt-2">
@@ -206,7 +213,7 @@ function WriteExam() {
           <div className="flex  items-center mt-2 justify-center result">
             <div className="flex flex-col gap-2">
               <h1 className="text-2xl">RESULT</h1>
-               <div className="divider"></div>
+              <div className="divider"></div>
               <div className="marks">
                 <h1 className="text-md">Total Marks : {examData.totalMarks}</h1>
                 <h1 className="text-md">
@@ -318,7 +325,7 @@ function WriteExam() {
             </div>
           </div>
         )}
-      </div> 
+      </div>
     )
   );
 }

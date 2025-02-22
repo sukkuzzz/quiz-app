@@ -1,16 +1,17 @@
 import { Col, message, Row } from "antd";
-import React, { useEffect } from "react";
+import React, { useCallback, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllExams } from "../../../apicalls/exams";
 import { HideLoading, ShowLoading } from "../../../redux/loaderSlice";
 import PageTitle from "../../../components/PageTitle";
 import { useNavigate } from "react-router-dom";
+
 function Home() {
   const [exams, setExams] = React.useState([]);
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.users);
-  const getExams = async () => {
+  const getExams = useCallback(async () => {
     try {
       dispatch(ShowLoading());
       const response = await getAllExams();
@@ -24,11 +25,11 @@ function Home() {
       dispatch(HideLoading());
       message.error(error.message);
     }
-  };
+  }, [dispatch]);
 
   useEffect(() => {
     getExams();
-  }, []);
+  }, [getExams]);
 
   return (
     user && (

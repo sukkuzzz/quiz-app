@@ -1,5 +1,5 @@
-import { Col, Form, message, Row, Select, Table } from "antd";
-import React, { useEffect } from "react";
+import { Col, Form, message, Row, Table } from "antd";
+import React, { useEffect, useCallback } from "react";
 import {
   addExam,
   deleteQuestionById,
@@ -49,7 +49,7 @@ function AddEditExam() {
     }
   };
 
-  const getExamData = async () => {
+  const getExamData = useCallback(async () => {
     try {
       dispatch(ShowLoading());
       const response = await getExamById({
@@ -65,20 +65,20 @@ function AddEditExam() {
       dispatch(HideLoading());
       message.error(error.message);
     }
-  };
+  }, [dispatch, params.id]);
 
   useEffect(() => {
     if (params.id) {
       getExamData();
     }
-  }, []);
+  }, [params.id, getExamData]);
 
   const deleteQuestion = async (questionId) => {
     try {
       dispatch(ShowLoading());
       const response = await deleteQuestionById({
         questionId,
-        examId : params.id
+        examId: params.id,
       });
       dispatch(HideLoading());
       if (response.success) {
@@ -174,7 +174,6 @@ function AddEditExam() {
                       <option value="GK">GK</option>
                       <option value="ML">Machine Learning</option>
                       <option value="ebusiness">E-business</option>
-
                     </select>
                   </Form.Item>
                 </Col>
